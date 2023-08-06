@@ -3,12 +3,86 @@
 //     .then(card => {console.log(`${card.data.cards[0].value} of ${card.data.cards[0].suit}`)})
 //     .catch(err => {console.log(err)});
 
+async function drawOne() {
+    let res = await axios.get(`https://deckofcardsapi.com/api/deck/new/draw/?count=1`)
+    console.log(res);
+    console.log(`${res.data.cards[0].value} of ${res.data.cards[0].suit}`);
+}
+drawOne();
+
 // // 2. 
 // axios.get(`https://deckofcardsapi.com/api/deck/new/draw/?count=2`)
 //     .then(card => {console.log(`First Card: ${card.data.cards[0].value} of ${card.data.cards[0].suit}, Second Card: ${card.data.cards[1].value} of ${card.data.cards[1].suit}`)})
 //     .catch(err => {console.log(err)});
 
+async function drawTwoSameDeck() {
+    let res = await axios.get(`https://deckofcardsapi.com/api/deck/new/draw/?count=2`)
+    console.log(res);
+    console.log(`First Card: ${res.data.cards[0].value} of ${res.data.cards[0].suit}, Second Card: ${res.data.cards[1].value} of ${res.data.cards[1].suit}`);
+}
+drawTwoSameDeck();
+
 // 3.
+// const baseHTML = 'https://deckofcardsapi.com/api/deck/'
+// const btn = document.querySelector('button');
+// const cardArea = document.querySelector('.card-area');
+// const newImg = document.createElement('img');
+// // Shuffle deck
+// axios.get(`${baseHTML}new/shuffle/?deck_count=1`)
+//     .then(deck => {
+//         console.log(deck);
+//         console.log(`Deck ID: ${deck.data.deck_id}, Remaining: ${deck.data.remaining}`);
+//         // Draw one card
+//         btn.onclick = function() {
+//             axios.get(`${baseHTML}${deck.data.deck_id}/draw/?count=1`)
+//                 .then(c1 => {
+//                     console.log(c1);
+//                     console.log(`Drawn Card: ${c1.data.cards[0].value} of ${c1.data.cards[0].suit}, Remaining cards: ${c1.data.remaining}`);
+//                     newImg.src = c1.data.cards[0].image;
+//                     cardArea.append(newImg);
+//                     if (c1.data.remaining === 0) {
+//                         btn.remove();
+//                     }
+//                 })
+//                 .catch(err => {console.log(err)});
+//         }
+//     });
+
+const baseHTML = 'https://deckofcardsapi.com/api/deck/'
+const btn = document.querySelector('button');
+const cardArea = document.querySelector('.card-area');
+
+
+async function keepDrawing() {
+    try {
+        // Shuffle and get deck ID
+        let deck = await axios.get(`${baseHTML}new/shuffle/?deck_count=1`)
+        console.log(deck);
+        const deckID = deck.data.deck_id;
+        console.log(deckID);
+        
+        // Draw card from shuffled deck
+        btn.onclick = async function() {
+            let card = await axios.get(`${baseHTML}${deckID}/draw/?count=1`)
+            console.log(card);
+            console.log(`Drawn Card: ${card.data.cards[0].value} of ${card.data.cards[0].suit}, Remaining cards: ${card.data.remaining}`);
+            const newImg = document.createElement('img');
+            newImg.src = card.data.cards[0].image;
+            cardArea.append(newImg);
+            if (card.data.remaining === 0) {
+                btn.remove();
+            }
+        }
+    } catch(e) {
+        console.log(e);
+    }
+}
+keepDrawing();
+
+ 
+
+
+////////////// DISREGARD BELOW //////////////////////
 // Draw one card from a new deck when page loads.
 // Show a button that lets user draw a card
 // Every time button is clicked, display drawn card until there are no cards left in deck (52)
@@ -140,30 +214,7 @@
 
 
 
-const baseHTML = 'https://deckofcardsapi.com/api/deck/'
-const btn = document.querySelector('button');
-const cardArea = document.querySelector('.card-area');
-const newImg = document.createElement('img');
-// Shuffle deck
-axios.get(`${baseHTML}new/shuffle/?deck_count=1`)
-    .then(deck => {
-        console.log(deck);
-        console.log(`Deck ID: ${deck.data.deck_id}, Remaining: ${deck.data.remaining}`);
-        // Draw one card
-        btn.onclick = function() {
-            axios.get(`${baseHTML}${deck.data.deck_id}/draw/?count=1`)
-                .then(c1 => {
-                    console.log(c1);
-                    console.log(`Drawn Card: ${c1.data.cards[0].value} of ${c1.data.cards[0].suit}, Remaining cards: ${c1.data.remaining}`);
-                    newImg.src = c1.data.cards[0].image;
-                    cardArea.append(newImg);
-                    if (c1.data.remaining === 0) {
-                        btn.remove();
-                    }
-                })
-                .catch(err => {console.log(err)});
-        }
-    });
+
    
     
 
